@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search Results</title>
+</head>
+<body>
+<h1>Search Results</h1>
+<p>Please enter a keyword:</p>
+<input type="text" id="keywordInput">
+<button id="searchButton">Search</button>
+<div id="results">
+    <!-- Search results will be displayed here -->
+</div>
+
+<script>
+    document.getElementById('searchButton').addEventListener('click', function() {
+        var keyword = document.getElementById('keywordInput').value;
+        var resultsDiv = document.getElementById('results');
+        resultsDiv.innerHTML = 'Loading...';
+
+        // 对关键字进行 URL 编码
+        var encodedKeyword = encodeURIComponent(keyword);
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'http://localhost:4000/search?keyword=' + encodedKeyword, true);
+        xhr.responseType = 'json';
+
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                var data = xhr.response;
+                displayResults(data);
+            } else {
+                resultsDiv.innerHTML = 'Error: ' + xhr.statusText;
+            }
+        };
+
+        xhr.send();
+    });
+
+    function displayResults(data) {
+        var resultsDiv = document.getElementById('results');
+        resultsDiv.innerHTML = '';
+
+        if (data.length === 0) {
+            resultsDiv.innerHTML = '<p>No results found.</p>';
+        } else {
+            var resultHtml = '<ul>';
+            data.forEach(function(item) {
+                resultHtml += '<li>' + item.HospitalName + ' - ' + item.DepartmentName + ' - ' + item.DoctorName + '</li>';
+            });
+            resultHtml += '</ul>';
+            resultsDiv.innerHTML = resultHtml;
+        }
+    }
+</script>
+</body>
+</html>
